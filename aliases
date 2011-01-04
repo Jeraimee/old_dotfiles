@@ -1,0 +1,56 @@
+#
+# Bash Aliases
+#
+alias colorslist="set | egrep 'COLOR_\w*'"  # lists all the colors
+alias ls='ls -G'
+alias ll='ls -lah'
+alias ..='cd ..;' # can then do .. .. .. to move up multiple directories.
+alias ...='.. ..'
+alias g='grep -i'  #case insensitive grep
+alias ducks='du -cks * | sort -rn|head -11' # Lists the size of all the folders
+alias top='top -o cpu'
+alias systail='tail -f /var/log/messages'
+# useful command to find what you should be aliasing:
+alias profileme="history | awk '{print \$2}' | awk 'BEGIN{FS=\"|\"}{print \$1}' | sort | uniq -c | sort -n | tail -n 20 | sort -nr"
+alias webserve="python -m SimpleHTTPServer"
+alias h='history|g'
+alias ps="ps aux"
+alias p="pwd"
+alias h="history"
+alias j="jobs"
+alias l="less"
+alias m="more"
+alias s="source ~/.bashrc"
+alias clean="rm *~;rm .*~"
+alias su="su -"
+alias awhois="whois -h whois.arin.net"
+alias d="cd ~/Desktop"
+alias path="echo $PATH"
+
+#
+# SSH aliases
+#
+alias alpha="ssh jhughes@alpha"
+# ...
+
+#
+# Git Aliases
+#
+alias gp="git push"
+alias pull="git pull"
+alias push="git push"
+alias status="git status"
+alias gst='git status'
+alias gl='git pull'
+alias gpa='git push-all' # see [alias] in ~/.gitconfig
+alias gd='git diff'
+alias ga='git add'
+alias gcl='git config --list'
+alias gc='git commit -v'
+alias gca='git commit -a'
+alias gb='git branch'
+alias gbc='git branch --color'
+alias gba='git branch -a'
+alias gco='git checkout'
+alias gdc='git-svn dcommit'
+alias gk='gitk --all &'

@@ -1,0 +1,207 @@
+#
+# CLI Functions
+#
+
+# Copies my public key to the given server
+function sendkey ()
+{
+   # scp ~/.ssh/id_rsa.pub $USER@"$*":/home/$USER/.ssh/authorized_keys
+   scp ~/.ssh/id_rsa.pub jhughes@"$*":/home/jhughes/.ssh/authorized_keys
+}
+
+# Copies my .bashrc to the given server
+function sendbash ()
+{
+   scp ~/.bashrc $USER@"$*":/home/$USER/.bashrc
+}
+
+# Copies my public key and bashrc to the given server
+function rsetup ()
+{
+   sendkey "$*"
+   sendbash "$*"
+}
+
+# Usage: simple-extract <file>
+# Description: extracts archived files (maybe)
+simple-extract ()
+{
+   if [ -f $1 ]; then
+       case $1 in
+           *.tar.bz2)  bzip2 -d $1         ;;
+           *.tar.gz)   tar -xvzf $1        ;;
+           *.bz2)      bzip2 -d $1         ;;
+           *.gz)       gunzip -d $1        ;;
+           *.tar)      tar -xvf $1         ;;
+           *.tgz)      gunzip -d $1        ;;
+           *.zip)      unzip $1            ;;
+           *.Z)        uncompress $1       ;;
+           *)          echo "'$1' Error. Please go away" ;;
+       esac
+   else
+       echo "'$1' is not a valid file"
+   fi
+}
+
+# Shows a "pretty" directory tree from the current directory downward.
+tree ()
+{
+   find . | ${BIN_PATH}sed -e 's/[^\/]*\//|----/g' -e 's/---- |/    |/g' |
+$PAGER
+}
+
+# Usage: show-archive <archive>
+# Description: view archive without unpack
+show-archive ()
+{
+   if [ -f $1 ]; then
+       case $1 in
+           *.tar.gz)   gunzip -c $1 | tar -tf - -- ;;
+           *.tar)              tar -tf $1 ;;
+           *.tgz)              tar -ztf $1 ;;
+           *.zip)              unzip -l $1 ;;
+           *)          echo "'$1' Error. Please go away" ;;
+       esac
+   else
+       echo "'$1' is not a valid archive"
+   fi
+}
+
+## WARNING: You must have w3m for the following
+## functions. It's just better then the rest ;)
+
+# Searching for keyword(s)
+# $ google foobar
+# $ google "foobar 42"
+# $ google "foobar <email@foo.bar>"
+# $ google foo+bar+42
+#
+google ()
+{
+   w3m "http://www.google.com/search?q="$1"";
+}
+
+# Searching for keywords in Newsgroups
+# $ ggogle foobar
+#
+ggogle ()
+{
+   w3m "http://groups.google.com/groups?q="$1"";
+}
+
+# Search for Posting from <Message-ID>
+# $ mggogle "2003-07-01T15-17-41@bofh.my-fqdn.de"
+#
+mggogle ()
+{
+   w3m "http://groups.google.com/groups?selm="$1"";
+}
+
+# Search Postings from <Author>
+# $ agoogle "John J. Rambo"
+# $ agoogle strcat@gmx.net
+#
+agoogle ()
+{
+   w3m "http://groups.google.com/groups?as_uauthors="$1"";
+}
+
+getrfc ()
+{
+   # TODO: Add this to all functions
+   if [[ $# = 0 ]]
+       then
+       echo "Usage   : getrfc RFC-Number"
+       echo "Example : getrfc 822"
+   else
+       w3m -dump http://www.ietf.org/rfc/rfc"$1".txt | $PAGER
+   fi
+}
+
+
+# move filenames to lowercase
+#
+lowercase ()
+{
+   for file ; do
+       filename=${file##*/}
+       case "$filename" in
+           */*) dirname==${file%/*} ;;
+           *) dirname=.;;
+       esac
+       nf=$(echo $filename | tr A-Z a-z)
+       newname="${dirname}/${nf}"
+       if [ "$nf" != "$filename" ]; then
+           mv "$file" "$newname"
+           echo "lowercase: $file --> $newname"
+       else
+           echo "lowercase: $file not changed."
+       fi
+   done
+}
+
+# swap 2 filenames around
+#
+swap ()
+{
+   local TMPFILE=tmp.$$
+   mv $1 $TMPFILE
+   mv $2 $1
+   mv $TMPFILE $2
+}
+
+# slick ps output for my processes
+#
+my_ps ()
+{
+   /bin/ps $@ -u $USER -o pid,%cpu,%mem,bsdtime,command ;
+}
+
+# repeat n times command
+#
+repeat ()
+{
+   local i max
+   max=$1; shift;
+   for ((i=1; i <= max ; i++)); do  # --> C-like syntax
+       eval "$@";
+   done
+}
+
+ask ()
+{
+   echo -n "$@" '[y/n] ' ; read ans
+   case "$ans" in
+       y*|Y*) return 0 ;;
+       *) return 1 ;;
+   esac
+}
+
+# find a file
+# - Updated Sun May  1, 2005  4:57 PM to use mdfind for Mac OS X Tiger
+ff ()
+{
+   mdfind $1|more;
+}
+
+# find a file and run $2 on it
+#
+fe ()
+{
+   ${BIN_PATH}find . -name '*'$1'*' -exec $2 {} \; ;
+}
+
+# find a string in a set of files
+#
+fstr ()
+{
+   if [ "$#" -gt 2 ]; then
+       echo "Usage: fstr \"pattern\" [files] "
+       return;
+   fi
+   SMSO=$(tput smso)
+   RMSO=$(tput rmso)
+   ${BIN_PATH}find . -type f -name "${2:-*}" -print | xargs grep -sin "$1"| \
+       ${BIN_PATH}sed "s/$1/$SMSO$1$RMSO/gI"
+}
+
