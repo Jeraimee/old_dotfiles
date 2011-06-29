@@ -16,7 +16,7 @@ alias webserve="python -m SimpleHTTPServer"
 alias h='history|g'
 alias ps="ps aux"
 alias p="pwd"
-alias h="history"
+alias h="history|g"
 alias j="jobs"
 alias l="less"
 alias m="more"
@@ -34,8 +34,16 @@ alias alpha="ssh jhughes@alpha"
 # ...
 
 #
+# CVS Aliases
+#
+alias cu="cvs update . 2>/dev/null"
+alias cm="cvs update . 2>/dev/null;cvs commit . 2>/dev/null"
+alias cdiff="cvs diff "
+
+#
 # Git Aliases
 #
+alias git="git-achievements"
 alias gp="git push"
 alias pull="git pull"
 alias push="git push"

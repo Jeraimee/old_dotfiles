@@ -204,4 +204,3 @@ fstr ()
    ${BIN_PATH}find . -type f -name "${2:-*}" -print | xargs grep -sin "$1"| \
        ${BIN_PATH}sed "s/$1/$SMSO$1$RMSO/gI"
 }
-
